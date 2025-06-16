@@ -9,6 +9,7 @@ public class Degrees {
 		
 		float celsius = Float.parseFloat(numInput);
 		
+		//When representing a float data type in Java, we should append the letter f to the end of the data type; otherwise it will save as double.
 		float fahrenheit = (celsius * 9.0f / 5.0f) + 32;
 		
 		 // Round to nearest whole number
