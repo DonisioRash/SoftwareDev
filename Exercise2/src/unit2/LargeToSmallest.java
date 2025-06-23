@@ -5,27 +5,34 @@ import javax.swing.JOptionPane;
 public class LargeToSmallest {
 
 	public static void main(String[] args) {
-		  int number;
-	        int largest = Integer.MIN_VALUE;  // Start with the smallest possible value
-	        int smallest = Integer.MAX_VALUE; // Start with the largest possible value
+		int[] numbers = new int[10]; // Array to store 10 numbers
+        int largest = Integer.MIN_VALUE;
+        int smallest = Integer.MAX_VALUE;
 
 	        // Loop to read 10 numbers
-	        for (int i = 1; i <= 10; i++) {
-	            String input = JOptionPane.showInputDialog("Enter number " + i + ":");
-	            number = Integer.parseInt(input);
+	        for (int i = 0; i < 10; i++) {
+	            String input = JOptionPane.showInputDialog("Enter number " + (i + 1) + ":");
+	            numbers[i] = Integer.parseInt(input);
 
 	            // Update largest and smallest
-	            if (number > largest) {
-	                largest = number;
+	            if (numbers[i] > largest) {
+	                largest = numbers[i];
 	            }
-	            if (number < smallest) {
-	                smallest = number;
+	            if (numbers[i] < smallest) {
+	                smallest = numbers[i];
 	            }
+	        }
+	        
+	        // Build a string of all numbers entered
+	        StringBuilder allNumbers = new StringBuilder("Numbers entered:\n");
+	        for (int num : numbers) {
+	            allNumbers.append(num).append(" ");
 	        }
 
 	        // Display results
 	        JOptionPane.showMessageDialog(null,
-	            "The largest number is: " + largest +
+	        		allNumbers.toString() +
+	            "\n\nThe largest number is: " + largest +
 	            "\nThe smallest number is: " + smallest);
 
 	}
