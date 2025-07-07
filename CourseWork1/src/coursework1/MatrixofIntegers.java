@@ -1,15 +1,15 @@
 package coursework1;
 
-import javax.swing.JOptionPane;
+import javax.swing.JOptionPane; // This import allows us to use dialog boxes for input and output.
 
-import java.util.Random;
+import java.util.Random; // This import allows us to use the Random class to generate random numbers.
 
 public class MatrixofIntegers {
 
 	public static void main(String[] args) {
-		int rows = 0;
-        int column = 0;
-        Random rand = new Random();
+		int rows = 0; // Declare a variable to store the number of rows in the matrix
+        int column = 0; // Declare a variable to store the number of columns in the matrix
+        Random rand = new Random(); // Create a Random object to generate random numbers later in the program
 
         // Ask for number of rows (3–10)
         while (rows < 3 || rows > 10) {
@@ -54,9 +54,7 @@ public class MatrixofIntegers {
             }
             result.append("|\n"); // After each row, close the row with a '|' and move to a new line
         }
-
         
-
         // Show matrix in dialog box
         JOptionPane.showMessageDialog(null, result.toString());
 	}
