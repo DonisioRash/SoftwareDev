@@ -55,8 +55,61 @@ public class MatrixofIntegers {
             result.append("|\n"); // After each row, close the row with a '|' and move to a new line
         }
         
+        // row averages
+        double[] rowAverage = new double[rows]; // array to hold the average of each row
+        // Loop over each row to compute its average
+        for (int i = 0; i < rows; i++) {
+            int sum = 0;
+            // Add up all the values in row i
+            for (int j = 0; j < column; j++) {
+                sum += matrix[i][j];
+            }
+            // calculate the average for row i
+            rowAverage[i] = (double) sum / column;
+        }
+
+        //column averages
+        double[] colAvg = new double[column]; //array to hold the average of each column.
+        // Loop over each column to compute its average
+        for (int j = 0; j < column; j++) {
+            int sum = 0;
+            // Add up all the values in column j 
+            for (int i = 0; i < rows; i++) {
+                sum += matrix[i][j];
+            }
+            // calculate the average for column j
+            colAvg[j] = (double) sum / rows;
+        }
+
+        // whole-matrix average
+        double totalSum = 0; // hold running total
+        for (int i = 0; i < rows; i++) { // go through each row
+            for (int j = 0; j < column; j++) { // check each column
+                totalSum += matrix[i][j]; // add the value to [i][j] to total sum
+            }
+        }
+        // calculate the average of the whole matrix
+        double matrixAvg = totalSum / (rows * column);
+        
+        // output row averages
+        result.append("\nRow averages:\n");
+        for (int i = 0; i < rows; i++) {
+            result.append(String.format("Row %-2d: %.2f\n", i, rowAverage[i]));
+        }
+
+        // output column averages
+        result.append("\nColumn averages:\n");
+        for (int j = 0; j < column; j++) {
+            result.append(String.format("Column %-2d: %.2f\n", j, colAvg[j]));
+        }
+
+        // output overall matrix average
+        result.append(String.format("\nOverall matrix average: %.2f", matrixAvg));
+
+        
+        
         // Show matrix in dialog box
-        JOptionPane.showMessageDialog(null, result.toString());
+        JOptionPane.showMessageDialog(null, "\nMatrix of integer numbers:\n" + result.toString());
 	}
 
 }
