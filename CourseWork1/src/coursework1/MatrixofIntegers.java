@@ -106,8 +106,7 @@ public class MatrixofIntegers {
         // output overall matrix average
         result.append(String.format("\nOverall matrix average: %.2f", matrixAvg));
 
-        
-        
+                
         // Show matrix in dialog box
         JOptionPane.showMessageDialog(null, "\nMatrix of integer numbers:\n" + result.toString());
 	}
