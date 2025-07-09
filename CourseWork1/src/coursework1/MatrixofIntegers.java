@@ -115,6 +115,7 @@ public class MatrixofIntegers {
             }
         }
         
+       
         // output row averages
         result.append("\nRow averages:\n");
         for (int n = 0; n < rows; n++) {
@@ -126,8 +127,8 @@ public class MatrixofIntegers {
         for (int m = 0; m < column; m++) {
             result.append(String.format("Column %-2d: %.2f\n", m, columnAverage[m]));
         }
-
-        // output overall matrix average
+               
+        //output overall matrix average
         result.append(String.format("\nOverall matrix average: %.2f", matrixAvg));
         
         //output second-largest row
@@ -140,7 +141,6 @@ public class MatrixofIntegers {
             "Second-largest column average: Column %d = %.2f\n",
             secondLargestAvInColumn, columnAverage[secondLargestAvInColumn]
         ));
-
                 
         // Show everything in one dialog box
         JOptionPane.showMessageDialog(null, "\nMatrix of integer numbers:\n" + result.toString());
