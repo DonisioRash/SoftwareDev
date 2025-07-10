@@ -115,7 +115,48 @@ public class MatrixofIntegers {
             }
         }
         
-       
+     //Build the modified matrix and count +1, 0, -1 
+        int countPlus1  = 0;
+        int countMinus1 = 0;
+        int countZero   = 0;
+
+        for (int n = 0; n < rows; n++) {
+            for (int m = 0; m < column; m++) {
+                int value = matrix[n][m];
+                if (value > rowAverage[n] && value > columnAverage[m]) {
+                    //above both row & column average
+                    matrix[n][m] = 1;
+                    countPlus1++;
+                }
+                else if (value < rowAverage[n] && value < columnAverage[m]) {
+                    //below both row & column average
+                    matrix[n][m] = -1;
+                    countMinus1++;
+                }
+                else {
+                    //otherwise
+                    matrix[n][m] = 0;
+                    countZero++;
+                }
+            }
+        }
+        
+        StringBuilder result1 = new StringBuilder();
+        
+        //modified matrix
+        for (int n = 0; n < rows; n++) {
+            for (int m = 0; m < column; m++) {
+                result1.append(String.format("| %-6d", matrix[n][m]));
+            }
+            result1.append("|\n");
+        }
+
+        //Show the counts of +1, 0, and -1
+        result1.append(String.format(
+            "\nThe program prints out the following lines:\nThe number of cells with values +1: %d\nThe number of cells with values 0: %d\nThe number of cells with values -1: %d\n",
+            countPlus1, countZero, countMinus1
+        ));
+                   
         // output row averages
         result.append("\nRow averages:\n");
         for (int n = 0; n < rows; n++) {
@@ -143,7 +184,7 @@ public class MatrixofIntegers {
         ));
                 
         // Show everything in one dialog box
-        JOptionPane.showMessageDialog(null, "\nMatrix of integer numbers:\n" + result.toString());
+        JOptionPane.showMessageDialog(null, "\nMatrix of integer numbers:\n" + result.toString() + "\nModified Matrix:\n"+ result1);
 	}
 
 }
