@@ -94,7 +94,7 @@ public class MatrixofIntegers {
         { 
             for (int m = 0; m < column; m++) //check each column
             { 
-                totalSum += matrix[n][m]; //add the value to [i][j] to total sum
+                totalSum += matrix[n][m]; //add the value to [n][m] to total sum
             }
         }
         
@@ -117,17 +117,17 @@ public class MatrixofIntegers {
         }
 
         //Find the column with the second-largest average
-        int LargestAvInColumn = 0;            //index of column with largest average
-        int secondLargestAvInColumn = -1;     //index of column with second-largest average
+        int LargestAverageInColumn = 0;            //index of column with largest average
+        int secondLargestAverageInColumn = -1;     //index of column with second-largest average
         for (int m = 1; m < column; m++)
         {
-            if (columnAverage[m] > columnAverage[LargestAvInColumn])
+            if (columnAverage[m] > columnAverage[LargestAverageInColumn])
             {
-            	secondLargestAvInColumn = LargestAvInColumn; // previous max becomes second
-                LargestAvInColumn = m;            // new max found
-            } else if (secondLargestAvInColumn == -1 || columnAverage[m] > columnAverage[secondLargestAvInColumn])
+            	secondLargestAverageInColumn = LargestAverageInColumn; // previous max becomes second
+                LargestAverageInColumn = m;            // new max found
+            } else if (secondLargestAverageInColumn == -1 || columnAverage[m] > columnAverage[secondLargestAverageInColumn])
             {
-            	secondLargestAvInColumn = m;      // update second max
+            	secondLargestAverageInColumn = m;      // update second max
             }
         }
         
@@ -203,7 +203,7 @@ public class MatrixofIntegers {
         
         //output second-largest column
         result.append(String.format("Second-largest column average: Column %d = %.2f\n",
-        		secondLargestAvInColumn, columnAverage[secondLargestAvInColumn]));
+        		secondLargestAverageInColumn, columnAverage[secondLargestAverageInColumn]));
                 
         // Show everything in one dialog box
         JOptionPane.showMessageDialog(null, "\nMatrix of integer numbers:\n" + result.toString() + "\nModified Matrix:\n"+ result1);
