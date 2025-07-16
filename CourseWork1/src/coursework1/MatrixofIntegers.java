@@ -213,6 +213,7 @@ public class MatrixofIntegers {
                    
         //output row averages
         result.append("\nRow averages:\n");
+        //loop each row
         for (int n = 0; n < rows; n++)
         {
             result.append(String.format("Row %-2d: %.2f\n", n, rowAverage[n]));
@@ -220,6 +221,7 @@ public class MatrixofIntegers {
 
         //output column averages
         result.append("\nColumn averages:\n");
+        //loop each column
         for (int m = 0; m < column; m++)
         {
         	result.append(String.format("Column %-2d: %.2f\n", m, columnAverage[m]));
