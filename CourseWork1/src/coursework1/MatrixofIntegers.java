@@ -1,29 +1,60 @@
 package coursework1;
 
-import javax.swing.JOptionPane; //This import allows us to use dialog boxes for input and output.
+import javax.swing.*; //import all classes and interfaces from javax.swing package.
 
-import java.util.Random; //This import allows us to use the Random class to generate random numbers.
+import java.util.Random; //import allows us to use the Random class to generate random numbers.
 
 public class MatrixofIntegers {
 
 	public static void main(String[] args) {
-		int rows = 0; //Declare a variable to store the number of rows in the matrix
-        int column = 0; //Declare a variable to store the number of columns in the matrix
-        Random rand = new Random(); //Create a Random object to generate random numbers later in the program
+		int rows = 0; //declare a variable to store the number of rows in the matrix
+        int column = 0; //declare a variable to store the number of columns in the matrix
+        Random rand = new Random(); //create a Random object to generate random numbers later in the program
 
         //Ask for number of rows (3–10)
-        while (rows < 3 || rows > 10)
-        {
+        while (true) {
             String rowInput = JOptionPane.showInputDialog("Enter number of rows (3 to 10):");
-            rows = Integer.parseInt(rowInput);
+            try {
+                rows = Integer.parseInt(rowInput);
+                //check if the input is in the asked range
+                if (rows >= 3 && rows <= 10)
+                {
+                	break; //if correct exit the loop
+                }
+                else
+                { 	//not in range show the message, show error
+                	JOptionPane.showMessageDialog(null, "Please enter a whole number between 3 and 10!");
+                }
+                } catch (NumberFormatException e)
+            {
+                    //If the input is wrong show error message
+                	JOptionPane.showMessageDialog(null, "Invalid input! Please enter a whole number (no decimals or letters).");
+            }
+            
+        }
+        
+        //Ask for number of columns (3–10)
+        while (true) {
+            String columnInput = JOptionPane.showInputDialog("Enter number of columns (3 to 10):");
+            try {
+            	column = Integer.parseInt(columnInput);
+            	//check if the input is in the asked range
+            	if (column >= 3 && column <= 10)
+            	{
+            		break;//if correct exit the loop
+            	}
+            	else
+            	{
+            		//not in range show the message, show error
+            		JOptionPane.showMessageDialog(null, "Please enter a whole number between 3 and 10!");
+                }
+            	} catch (NumberFormatException e)
+            {
+            		//If the input is wrong show error message
+            		JOptionPane.showMessageDialog(null, "Invalid input! Please enter a whole number (no decimals or letters).");
+            }
         }
 
-        //Ask for number of columns (3–10)
-        while (column < 3 || column > 10) 
-        {
-            String columnInput = JOptionPane.showInputDialog("Enter number of columns (3 to 10):");
-            column = Integer.parseInt(columnInput);
-        }
 
         //Create matrix
         int[][] matrix = new int[rows][column];
@@ -102,21 +133,21 @@ public class MatrixofIntegers {
         double matrixAvg = totalSum / (rows * column);
         
         //Find the row with the second-largest average
-        int LargestAvInRow = 0;            //index of row with largest average
+        int largestAverageInRow = 0;            //index of row with largest average
         int secondLargestAvInRow = -1;     //index of row with second-largest average
         for (int n = 1; n < rows; n++)
         {
-            if (rowAverage[n] > rowAverage[LargestAvInRow]) 
+            if (rowAverage[n] > rowAverage[largestAverageInRow]) 
             {
-            	secondLargestAvInRow  = LargestAvInRow; //previous max becomes second
-                LargestAvInRow = n;            //new max found
+            	secondLargestAvInRow  = largestAverageInRow; //previous max becomes second
+                largestAverageInRow = n;            //new max found
             } else if (secondLargestAvInRow  == -1 || rowAverage[n] > rowAverage[secondLargestAvInRow ])
             {
             	secondLargestAvInRow  = n;      //update second max
             }
         }
 
-        //Find the column with the second-largest average
+        //find the column with the second-largest average
         int LargestAverageInColumn = 0;            //index of column with largest average
         int secondLargestAverageInColumn = -1;     //index of column with second-largest average
         for (int m = 1; m < column; m++)
@@ -131,7 +162,7 @@ public class MatrixofIntegers {
             }
         }
         
-        //Build the modified matrix and count +1, 0, -1 
+        //build the modified matrix and count +1, 0, -1 
         int countPlus1  = 0;
         int countMinus1 = 0;
         int countZero   = 0;
@@ -174,20 +205,20 @@ public class MatrixofIntegers {
             result1.append("|\n");
         }
 
-        //Show the counts of +1, 0, and -1
+        //show the counts of +1, 0, and -1
         result1.append(String.format(
             "\nThe program prints out the following lines:\nThe number of cells with values +1: %d\nThe number of cells with values 0: %d\nThe number of cells with values -1: %d\n",
             countPlus1, countZero, countMinus1
         ));
                    
-        // output row averages
+        //output row averages
         result.append("\nRow averages:\n");
         for (int n = 0; n < rows; n++)
         {
             result.append(String.format("Row %-2d: %.2f\n", n, rowAverage[n]));
         }
 
-        // output column averages
+        //output column averages
         result.append("\nColumn averages:\n");
         for (int m = 0; m < column; m++)
         {
@@ -204,9 +235,21 @@ public class MatrixofIntegers {
         //output second-largest column
         result.append(String.format("Second-largest column average: Column %d = %.2f\n",
         		secondLargestAverageInColumn, columnAverage[secondLargestAverageInColumn]));
-                
-        // Show everything in one dialog box
-        JOptionPane.showMessageDialog(null, "\nMatrix of integer numbers:\n" + result.toString() + "\nModified Matrix:\n"+ result1);
+        
+        //show the entire output      
+        JTextArea textArea = new JTextArea
+        ("Matrix of integer numbers:\n" + result.toString() + "\nModified Matrix:\n" + result1.toString());
+        //text area set as read-only
+        textArea.setEditable(false);
+        //ensures the scroll starts at the top of the text
+        textArea.setCaretPosition(0);
+        //allows Scrolling
+        JScrollPane scrollPane = new JScrollPane(textArea);
+        //default size for scroll window
+        scrollPane.setPreferredSize(new java.awt.Dimension(650, 400));
+        //dialog box with scroll
+        JOptionPane.showMessageDialog(null, scrollPane, "Matrix Results", JOptionPane.INFORMATION_MESSAGE);
+        
 	}
 
 }
