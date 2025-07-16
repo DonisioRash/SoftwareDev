@@ -246,7 +246,7 @@ public class MatrixofIntegers {
         //allows Scrolling
         JScrollPane scrollPane = new JScrollPane(textArea);
         //default size for scroll window
-        scrollPane.setPreferredSize(new java.awt.Dimension(650, 400));
+        scrollPane.setPreferredSize(new java.awt.Dimension(400, 450));
         //dialog box with scroll
         JOptionPane.showMessageDialog(null, scrollPane, "Matrix Results", JOptionPane.INFORMATION_MESSAGE);
         
