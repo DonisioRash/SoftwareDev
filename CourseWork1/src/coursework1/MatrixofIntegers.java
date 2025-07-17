@@ -1,257 +1,188 @@
 package coursework1;
 
-import javax.swing.*; //import all classes and interfaces from javax.swing package.
-
 import java.util.Random; //import allows us to use the Random class to generate random numbers.
 
+//import all classes and interfaces from javax.swing package.
+import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+
 public class MatrixofIntegers {
-
+	// Purpose of main is to gather input, generates and processes matrix data,
+	// performs calculations and formats and displays all outputs.
 	public static void main(String[] args) {
-		int rows = 0; //declare a variable to store the number of rows in the matrix
-        int column = 0; //declare a variable to store the number of columns in the matrix
-        Random rand = new Random(); //create a Random object to generate random numbers later in the program
+		// Get number of rows from user input
+		int rows = input("rows");
+		int columns = input("columns");
 
-        //Ask for number of rows (3–10)
-        while (true) {
-            String rowInput = JOptionPane.showInputDialog("Enter number of rows (3 to 10):");
-            try {
-                rows = Integer.parseInt(rowInput);
-                //check if the input is in the asked range
-                if (rows >= 3 && rows <= 10)
-                {
-                	break; //if correct exit the loop
-                }
-                else
-                { 	//not in range show the message, show error
-                	JOptionPane.showMessageDialog(null, "Please enter a whole number between 3 and 10!");
-                }
-                } catch (NumberFormatException e)
-            {
-                    //If the input is wrong show error message
-                	JOptionPane.showMessageDialog(null, "Invalid input! Please enter a whole number (no decimals or letters).");
-            }
-            
-        }
-        
-        //Ask for number of columns (3–10)
-        while (true) {
-            String columnInput = JOptionPane.showInputDialog("Enter number of columns (3 to 10):");
-            try {
-            	column = Integer.parseInt(columnInput);
-            	//check if the input is in the asked range
-            	if (column >= 3 && column <= 10)
-            	{
-            		break;//if correct exit the loop
-            	}
-            	else
-            	{
-            		//not in range show the message, show error
-            		JOptionPane.showMessageDialog(null, "Please enter a whole number between 3 and 10!");
-                }
-            	} catch (NumberFormatException e)
-            {
-            		//If the input is wrong show error message
-            		JOptionPane.showMessageDialog(null, "Invalid input! Please enter a whole number (no decimals or letters).");
-            }
-        }
+		int[][] matrix = generateMatrix(rows, columns); // Generate matrix with even/odd rules
+		String originalMatrixStr = formatMatrix(matrix); // Format original matrix as string
 
+		double[] rowAverage = calculateRowAverages(matrix); // Calculate row averages
+		double[] columnAverage = calculateColumnAverages(matrix); // Calculate column averages
+		double matrixAverage = calculateMatrixAverage(matrix); // Calculate average of entire matrix
 
-        //Create matrix
-        int[][] matrix = new int[rows][column];
+		int secondRow = findSecondLargestAverage(rowAverage); // Find row with second-largest average
+		int secondColumn = findSecondLargestAverage(columnAverage); // Find column with second-largest average
 
-        //Fill matrix with random even/odd values based on row index
-        for (int n = 0; n < rows; n++) 
-        {
-        	boolean isEvenRow = (n % 2 == 0); //true for even-numbered rows
-            for (int m = 0; m < column; m++)
-            {
-                int number;
-                //Keep generating until it matches the rule (even or odd)
-                do 
-                {
-                  number = rand.nextInt(1001); //random number from 0 to 1000
-                } while ((isEvenRow && number % 2 != 0) || (!isEvenRow && number % 2 == 0));
-                matrix[n][m] = number;
-            }
-        }
-        
-        //Create a StringBuilder to store the final formatted matrix output   
-        StringBuilder result = new StringBuilder();       
+		int[] counts = new int[3]; // Initialize count array for +1, 0, -1 values
+		int[][] modifiedMatrix = modifyMatrix(matrix, rowAverage, columnAverage, counts); // Generate modified matrix
+																							// based on comparison
+		String modifiedMatrixStr = formatMatrix(modifiedMatrix); // Format modified matrix as string
 
-        //Loop through each row in the matrix
-        for (int n = 0; n < rows; n++)
-        {           
-        	//Loop through each column in the current row
-            for (int m = 0; m < column; m++)
-            {
-                result.append(String.format("| %-6d", matrix[n][m])); //formatted alignment
-            }
-            result.append("|\n"); //After each row, close the row with a '|' and move to a new line
-        }
-        
-        //row averages
-        double[] rowAverage = new double[rows]; //array to hold the average of each row
-        //Loop over each row to compute its average
-        for (int n = 0; n < rows; n++)
-        {
-            int sum = 0;
-            //Add up all the values in row i
-            for (int m = 0; m < column; m++)
-            {
-                sum += matrix[n][m];
-            }
-            //calculate the average for row i
-            rowAverage[n] = (double) sum / column;
-        }
+		StringBuilder analysis = new StringBuilder(); // StringBuilder to hold analysis text
+		analysis.append("\nRow averages:\n"); // Add heading for row averages
+		for (int n = 0; n < rowAverage.length; n++) {
+			analysis.append(String.format("Row %-2d: %.2f\n", n, rowAverage[n])); // Add the average of each row
+		}
+		analysis.append("\nColumn averages:\n"); // Add heading for column averages
+		for (int m = 0; m < columnAverage.length; m++) {
+			analysis.append(String.format("Column %-2d: %.2f\n", m, columnAverage[m])); // Add the average of each
+																						// column
+		}
+		analysis.append(String.format("\nOverall matrix average: %.2f", matrixAverage)); // Add overall matrix average
+		analysis.append(
+				String.format("\nSecond-largest row average: Row %d = %.2f\n", secondRow, rowAverage[secondRow])); // Second-largest
+																													// row
+																													// average
+		analysis.append(String.format("Second-largest column average: Column %d = %.2f\n", secondColumn,
+				columnAverage[secondColumn])); // Second-largest column average
 
-        //column averages
-        double[] columnAverage = new double[column]; //array to hold the average of each column.
-        //Loop over each column to compute its average
-        for (int m = 0; m < column; m++)
-        {
-            int sum = 0;
-            //Add up all the values in column j 
-            for (int n = 0; n < rows; n++)
-            {
-                sum += matrix[n][m];
-            }
-            //calculate the average for column j
-            columnAverage[m] = (double) sum / rows;
-        }
+		String countSummary = String.format( // Format counts of +1, 0, and -1 values
+				"\nThe program prints out the following lines:\n" + "The number of cells with values +1: %d\n"
+						+ "The number of cells with values 0: %d\n" + "The number of cells with values -1: %d\n",
+				counts[0], counts[1], counts[2]);
+		showOutput("Matrix Results", "Matrix of integer numbers:\n" + originalMatrixStr + analysis,
+				"Modified Matrix:\n" + modifiedMatrixStr + countSummary); // Display output
+	}
 
-        //whole-matrix average
-        double totalSum = 0; //hold running total
-        for (int n = 0; n < rows; n++) //go through each row
-        { 
-            for (int m = 0; m < column; m++) //check each column
-            { 
-                totalSum += matrix[n][m]; //add the value to [n][m] to total sum
-            }
-        }
-        
-        //calculate the average of the whole matrix
-        double matrixAvg = totalSum / (rows * column);
-        
-        //Find the row with the second-largest average
-        int largestAverageInRow = 0;            //index of row with largest average
-        int secondLargestAvInRow = -1;     //index of row with second-largest average
-        for (int n = 1; n < rows; n++)
-        {
-            if (rowAverage[n] > rowAverage[largestAverageInRow]) 
-            {
-            	secondLargestAvInRow  = largestAverageInRow; //previous max becomes second
-                largestAverageInRow = n;            //new max found
-            } else if (secondLargestAvInRow  == -1 || rowAverage[n] > rowAverage[secondLargestAvInRow ])
-            {
-            	secondLargestAvInRow  = n;      //update second max
-            }
-        }
+	public static int input(String name) {
+		while (true) { // Loop until valid input is received
+			String input = JOptionPane.showInputDialog("Enter number of " + name + " (3 to 10):"); // Prompt user
+			try {
+				int value = Integer.parseInt(input); // Try to parse input
+				if (value >= 3 && value <= 10) {
+					return value; // Return if in valid range
+				} else {
+					JOptionPane.showMessageDialog(null, "Please enter a whole number between 3 and 10!"); // Show error
+				}
+			} catch (NumberFormatException e) {
+				JOptionPane.showMessageDialog(null,
+						"Invalid input! Please enter a whole number (no decimals or letters)."); // Show error if
+																									// parsing fails
+			}
+		}
+	}
 
-        //find the column with the second-largest average
-        int LargestAverageInColumn = 0;            //index of column with largest average
-        int secondLargestAverageInColumn = -1;     //index of column with second-largest average
-        for (int m = 1; m < column; m++)
-        {
-            if (columnAverage[m] > columnAverage[LargestAverageInColumn])
-            {
-            	secondLargestAverageInColumn = LargestAverageInColumn; // previous max becomes second
-                LargestAverageInColumn = m;            // new max found
-            } else if (secondLargestAverageInColumn == -1 || columnAverage[m] > columnAverage[secondLargestAverageInColumn])
-            {
-            	secondLargestAverageInColumn = m;      // update second max
-            }
-        }
-        
-        //build the modified matrix and count +1, 0, -1 
-        int countPlus1  = 0;
-        int countMinus1 = 0;
-        int countZero   = 0;
+	public static int[][] generateMatrix(int rows, int columns) {
+		int[][] matrix = new int[rows][columns]; // Create matrix
+		Random rand = new Random(); // Create random number generator
+		for (int n = 0; n < rows; n++) {
+			boolean isEvenRow = (n % 2 == 0); // Determine if row is even numbered
+			for (int m = 0; m < columns; m++) {
+				int number;
+				do {
+					number = rand.nextInt(1001); // Generate a random number between 0 and 1000
+				} while ((isEvenRow && number % 2 != 0) || (!isEvenRow && number % 2 == 0)); // Ensure number matches
+																								// even/odd rule
+				matrix[n][m] = number; // Assign number to matrix
+			}
+		}
+		return matrix; // Return the filled matrix
+	}
 
-        for (int n = 0; n < rows; n++)
-        {
-            for (int m = 0; m < column; m++)
-            {
-                int value = matrix[n][m];
-                if (value > rowAverage[n] && value > columnAverage[m])
-                {
-                    //above both row & column average
-                    matrix[n][m] = 1;
-                    countPlus1++;
-                }
-                else if (value < rowAverage[n] && value < columnAverage[m])
-                {
-                    //below both row & column average
-                    matrix[n][m] = -1;
-                    countMinus1++;
-                }
-                else
-                {
-                    //otherwise
-                    matrix[n][m] = 0;
-                    countZero++;
-                }
-            }
-        }
-        
-        StringBuilder result1 = new StringBuilder();
-        
-        //modified matrix
-        for (int n = 0; n < rows; n++)
-        {
-            for (int m = 0; m < column; m++)
-            {
-                result1.append(String.format("| %-6d", matrix[n][m]));
-            }
-            result1.append("|\n");
-        }
+	public static String formatMatrix(int[][] matrix) {
+		StringBuilder result = new StringBuilder(); // Initialize result string
+		for (int[] row : matrix) {
+			for (int value : row) {
+				result.append(String.format("| %6d", value)); // Format each number
+			}
+			result.append("|\n"); // End of row
+		}
+		return result.toString(); // Return formatted matrix
+	}
 
-        //show the counts of +1, 0, and -1
-        result1.append(String.format(
-            "\nThe program prints out the following lines:\nThe number of cells with values +1: %d\nThe number of cells with values 0: %d\nThe number of cells with values -1: %d\n",
-            countPlus1, countZero, countMinus1
-        ));
-                   
-        //output row averages
-        result.append("\nRow averages:\n");
-        //loop each row
-        for (int n = 0; n < rows; n++)
-        {
-            result.append(String.format("Row %-2d: %.2f\n", n, rowAverage[n]));
-        }
+	public static double[] calculateRowAverages(int[][] matrix) {
+		int rows = matrix.length;
+		int columns = matrix[0].length;
+		double[] averages = new double[rows]; // Create result array
+		for (int n = 0; n < rows; n++) {
+			int sum = 0;
+			for (int m = 0; m < columns; m++) {
+				sum += matrix[n][m]; // Add each element in row
+			}
+			averages[n] = (double) sum / columns; // Compute average
+		}
+		return averages; // Return row averages
+	}
 
-        //output column averages
-        result.append("\nColumn averages:\n");
-        //loop each column
-        for (int m = 0; m < column; m++)
-        {
-        	result.append(String.format("Column %-2d: %.2f\n", m, columnAverage[m]));
-        }
-               
-        //output overall matrix average
-        result.append(String.format("\nOverall matrix average: %.2f", matrixAvg));
-        
-        //output second-largest row
-        result.append(String.format("\nSecond-largest row average: Row %d = %.2f\n",
-        		secondLargestAvInRow , rowAverage[secondLargestAvInRow]));
-        
-        //output second-largest column
-        result.append(String.format("Second-largest column average: Column %d = %.2f\n",
-        		secondLargestAverageInColumn, columnAverage[secondLargestAverageInColumn]));
-        
-        //show the entire output      
-        JTextArea textArea = new JTextArea
-        ("Matrix of integer numbers:\n" + result.toString() + "\nModified Matrix:\n" + result1.toString());
-        //text area set as read-only
-        textArea.setEditable(false);
-        //ensures the scroll starts at the top of the text
-        textArea.setCaretPosition(0);
-        //allows Scrolling
-        JScrollPane scrollPane = new JScrollPane(textArea);
-        //default size for scroll window
-        scrollPane.setPreferredSize(new java.awt.Dimension(400, 450));
-        //dialog box with scroll
-        JOptionPane.showMessageDialog(null, scrollPane, "Matrix Results", JOptionPane.INFORMATION_MESSAGE);
-        
+	public static double[] calculateColumnAverages(int[][] matrix) {
+		int rows = matrix.length;
+		int cols = matrix[0].length;
+		double[] averages = new double[cols]; // Create result array
+		for (int m = 0; m < cols; m++) {
+			int sum = 0;
+			for (int n = 0; n < rows; n++) {
+				sum += matrix[n][m]; // Add each element in column
+			}
+			averages[m] = (double) sum / rows; // Compute average
+		}
+		return averages; // Return column averages
+	}
+
+	public static double calculateMatrixAverage(int[][] matrix) {
+		int total = 0;
+		for (int[] row : matrix) {
+			for (int value : row) {
+				total += value; // Add each element to total
+			}
+		}
+		return (double) total / (matrix.length * matrix[0].length); // Return overall average
+	}
+
+	public static int findSecondLargestAverage(double[] arr) {
+		int largest = 0;
+		int second = -1; // Initialize indices
+		for (int sla = 1; sla < arr.length; sla++) {
+			if (arr[sla] > arr[largest]) {
+				second = largest;
+				largest = sla; // Update largest and second-largest
+			} else if (second == -1 || arr[sla] > arr[second]) {
+				second = sla; // Update second-largest
+			}
+		}
+		return second; // Return index of second-largest
+	}
+
+	public static int[][] modifyMatrix(int[][] matrix, double[] rowAverage, double[] columnAverage, int[] counts) {
+		int rows = matrix.length;
+		int columns = matrix[0].length;
+		int[][] modified = new int[rows][columns]; // Create modified matrix
+		for (int n = 0; n < rows; n++) {
+			for (int m = 0; m < columns; m++) {
+				int val = matrix[n][m];
+				if (val > rowAverage[n] && val > columnAverage[m]) {
+					modified[n][m] = 1; // Greater than both averages
+					counts[0]++;
+				} else if (val < rowAverage[n] && val < columnAverage[m]) {
+					modified[n][m] = -1; // Less than both averages
+					counts[2]++;
+				} else {
+					modified[n][m] = 0; // Between the two
+					counts[1]++;
+				}
+			}
+		}
+		return modified; // Return modified matrix
+	}
+
+	public static void showOutput(String title, String original, String modified) {
+		JTextArea textArea = new JTextArea(original + "\n" + modified); // Combine original and modified text
+		textArea.setEditable(false); // Make text read-only
+		textArea.setCaretPosition(0); // Set scroll to top
+		JScrollPane scrollPane = new JScrollPane(textArea); // Wrap text area in scroll pane
+		scrollPane.setPreferredSize(new java.awt.Dimension(400, 450)); // Set window size
+		JOptionPane.showMessageDialog(null, scrollPane, title, JOptionPane.INFORMATION_MESSAGE); // Show dialog
 	}
 
 }
