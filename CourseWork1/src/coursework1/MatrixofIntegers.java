@@ -95,7 +95,7 @@ public class MatrixofIntegers {
 		StringBuilder result = new StringBuilder(); // Initialize result string
 		for (int[] row : matrix) {
 			for (int value : row) {
-				result.append(String.format("| %6d", value)); // Format each number
+				result.append(String.format("| %4d", value)); // Format each number
 			}
 			result.append("|\n"); // End of row
 		}
@@ -178,6 +178,7 @@ public class MatrixofIntegers {
 
 	public static void showOutput(String title, String original, String modified) {
 		JTextArea textArea = new JTextArea(original + "\n" + modified); // Combine original and modified text
+		textArea.setFont(new java.awt.Font("Consolas", java.awt.Font.PLAIN, 10)); // Force font
 		textArea.setEditable(false); // Make text read-only
 		textArea.setCaretPosition(0); // Set scroll to top
 		JScrollPane scrollPane = new JScrollPane(textArea); // Wrap text area in scroll pane
