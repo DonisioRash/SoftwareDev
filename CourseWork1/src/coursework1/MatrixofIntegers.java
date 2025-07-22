@@ -1,3 +1,5 @@
+//Donisio Rash
+
 package coursework1;
 
 import java.util.Random; //import allows us to use the Random class to generate random numbers.
@@ -56,6 +58,7 @@ public class MatrixofIntegers {
 				"Modified Matrix:\n" + modifiedMatrixStr + countSummary); // Display output
 	}
 
+	// Receive input from user
 	public static int input(String name) {
 		while (true) { // Loop until valid input is received
 			String input = JOptionPane.showInputDialog("Enter number of " + name + " (3 to 10):"); // Prompt user
@@ -74,6 +77,9 @@ public class MatrixofIntegers {
 		}
 	}
 
+	// Create a matrix of integer numbers with N rows and M column
+	// and fill it up by random integers ranging from 0 to 1000 such that odd rows
+	// contain only odd numbers while even rows contain only even numbers.
 	public static int[][] generateMatrix(int rows, int columns) {
 		int[][] matrix = new int[rows][columns]; // Create matrix
 		Random rand = new Random(); // Create random number generator
@@ -91,6 +97,7 @@ public class MatrixofIntegers {
 		return matrix; // Return the filled matrix
 	}
 
+	// modify the cells in the matrix
 	public static String formatMatrix(int[][] matrix) {
 		StringBuilder result = new StringBuilder(); // Initialize result string
 		for (int[] row : matrix) {
@@ -102,6 +109,7 @@ public class MatrixofIntegers {
 		return result.toString(); // Return formatted matrix
 	}
 
+	// Compute the average of each row of the whole matrix
 	public static double[] calculateRowAverages(int[][] matrix) {
 		int rows = matrix.length;
 		int columns = matrix[0].length;
@@ -116,6 +124,7 @@ public class MatrixofIntegers {
 		return averages; // Return row averages
 	}
 
+	// Computer the average of each column of the whole matrix
 	public static double[] calculateColumnAverages(int[][] matrix) {
 		int rows = matrix.length;
 		int cols = matrix[0].length;
@@ -130,6 +139,7 @@ public class MatrixofIntegers {
 		return averages; // Return column averages
 	}
 
+	// The average of the whole matrix
 	public static double calculateMatrixAverage(int[][] matrix) {
 		int total = 0;
 		for (int[] row : matrix) {
@@ -140,42 +150,63 @@ public class MatrixofIntegers {
 		return (double) total / (matrix.length * matrix[0].length); // Return overall average
 	}
 
+	// Used for both row averages and column averages to find which row/column has
+	// the second-highest average
 	public static int findSecondLargestAverage(double[] arr) {
-		int largest = 0;
-		int second = -1; // Initialize indices
-		for (int sla = 1; sla < arr.length; sla++) {
+		int largest = 0; // Assume the first element (index 0) is the largest to start
+		int second = -1; // Start with 'second' as -1 (means "not found yet")
+
+		for (int sla = 1; sla < arr.length; sla++) { // Start from the second element (index 1)
 			if (arr[sla] > arr[largest]) {
+				// If current element is bigger than the largest so far,
+				// move the current 'largest' to 'second', and update 'largest'
 				second = largest;
-				largest = sla; // Update largest and second-largest
+				largest = sla;
 			} else if (second == -1 || arr[sla] > arr[second]) {
-				second = sla; // Update second-largest
+				// If 'second' hasn't been set yet, or current is bigger than 'second'
+				// (but not bigger than 'largest'), update 'second'
+				second = sla;
 			}
 		}
-		return second; // Return index of second-largest
+		return second; // Return the index of the second-largest value
 	}
 
+	// It creates a new matrix of the same size as the original.
+	// Each cell in the new matrix gets a value:
+	// 1 if the original value is greater than both its row and column average,
+	// -1 if the original value is less than both its row and column average,
+	// 0 otherwise.
+	// It also counts how many times each of these values (1, 0, -1) occurs.
 	public static int[][] modifyMatrix(int[][] matrix, double[] rowAverage, double[] columnAverage, int[] counts) {
 		int rows = matrix.length;
 		int columns = matrix[0].length;
-		int[][] modified = new int[rows][columns]; // Create modified matrix
-		for (int n = 0; n < rows; n++) {
-			for (int m = 0; m < columns; m++) {
-				int val = matrix[n][m];
+		int[][] modified = new int[rows][columns]; // Create new matrix for results
+
+		for (int n = 0; n < rows; n++) { // For each row
+			for (int m = 0; m < columns; m++) { // For each column
+				int val = matrix[n][m]; // Get the original matrix value
+
+				// If value is greater than both its row and column average
 				if (val > rowAverage[n] && val > columnAverage[m]) {
-					modified[n][m] = 1; // Greater than both averages
-					counts[0]++;
-				} else if (val < rowAverage[n] && val < columnAverage[m]) {
-					modified[n][m] = -1; // Less than both averages
-					counts[2]++;
-				} else {
-					modified[n][m] = 0; // Between the two
-					counts[1]++;
+					modified[n][m] = 1; // Set to 1 in new matrix
+					counts[0]++; // Count another +1
+				}
+				// If value is less than both its row and column average
+				else if (val < rowAverage[n] && val < columnAverage[m]) {
+					modified[n][m] = -1; // Set to -1 in new matrix
+					counts[2]++; // Count another -1
+				}
+				// If value is neither, set to 0
+				else {
+					modified[n][m] = 0; // Set to 0 in new matrix
+					counts[1]++; // Count another 0
 				}
 			}
 		}
-		return modified; // Return modified matrix
+		return modified; // Return the new matrix with +1, 0, -1 values
 	}
 
+	// Display Results
 	public static void showOutput(String title, String original, String modified) {
 		JTextArea textArea = new JTextArea(original + "\n" + modified); // Combine original and modified text
 		textArea.setFont(new java.awt.Font("Consolas", java.awt.Font.PLAIN, 10)); // Force font
