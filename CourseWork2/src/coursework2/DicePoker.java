@@ -1,107 +1,94 @@
 package coursework2;
 
-//Import necessary classes
-import java.util.Random; // Allows us to generate random numbers (for rolling dice)
+import java.util.Random;
 
 import javax.swing.JOptionPane;
 
 public class DicePoker {
 
-	static int bank = 100; // Starting bank balance
-	static Random rand = new Random(); // Random generator for dice rolls
+	static int bank = 6; // Start with £6
+	static int attemptsLeft = 5; // Max 5 attempts
+	static Random rand = new Random(); // Random number generator
+
+	// Array to keep track of results for 5 bets max
+	static String[] results = new String[5];
+	static int roundCounter = 0; // Tracks how many rounds played
 
 	public static void main(String[] args) {
-		showMessage("Welcome to Dice Poker!\nYou start with $" + bank);
+		showMessage("🎲 Welcome to Dice Poker 🎲\nYou start with £6.\nEach bet costs £1.\nYou have 5 total attempts.");
 
-		// Game loop
-		while (bank > 0) {
-			showMessage("Current Balance: $" + bank);
-			int bet = getBet();
+		while (bank > 0 && attemptsLeft > 0) {
+			showMessage("💰 Balance: £" + bank + "\nAttempts left: " + attemptsLeft);
 
-			if (bet == 0) {
-				break; // User chooses to quit
+			int confirm = JOptionPane.showConfirmDialog(null, "Would you like to place a £1 bet?", "Place Bet",
+					JOptionPane.YES_NO_OPTION);
+
+			if (confirm != JOptionPane.YES_OPTION) {
+				break;
 			}
+
+			bank -= 1; // Deduct £1 to place bet
+			attemptsLeft--; // Use up one attempt
+			roundCounter++; // Count this round
 
 			int die1 = rollDie();
 			int die2 = rollDie();
 
-			String roundResult = "You rolled: " + die1 + " and " + die2 + "\n";
-			int winnings = calculateWinnings(die1, die2, bet);
-
+			int winnings = calculateWinnings(die1, die2); // Either 3, 2, or 0
+			int netChange = winnings - 1; // Gain/loss after £1 bet
 			bank += winnings;
 
-			roundResult += getOutcomeMessage(die1, die2, winnings);
-			roundResult += "\nNew Balance: $" + bank;
+			// Format: Round X - Rolled X and Y – Earned/Lost £Z
+			results[roundCounter - 1] = String.format("Round %d - Rolled %d and %d – %s £%d", roundCounter, die1, die2,
+					(netChange >= 0) ? "Earned" : "Lost", Math.abs(netChange));
 
-			showMessage(roundResult);
+			// Optional per-round feedback
+			String message = String.format("🎲 You rolled: %d and %d\n%s\n💰 New Balance: £%d\n🕐 Attempts Left: %d",
+					die1, die2, getOutcomeMessage(die1, die2, winnings), bank, attemptsLeft);
+
+			showMessage(message);
 		}
 
-		// Final message after game ends
-		String finalMsg = (bank <= 0) ? "You lost all your money!" : "You ended the game with $" + bank;
-		showMessage("Game Over!\n" + finalMsg);
+		// Compile all results
+		StringBuilder summary = new StringBuilder("📊 Game Summary:\n\n");
+
+		for (int i = 0; i < roundCounter; i++) {
+			summary.append(results[i]).append("\n");
+		}
+
+		summary.append("\n🏁 Final Balance: £").append(bank);
+
+		showMessage(summary.toString());
 	}
 
-	// Roll a single six-sided die
+	// Simulates rolling one 6-sided die
 	public static int rollDie() {
 		return rand.nextInt(6) + 1;
 	}
 
-	// Prompt user for a valid bet
-	public static int getBet() {
-		while (true) {
-			String input = JOptionPane.showInputDialog("Enter your bet (0 to quit):");
-			if (input == null)
-				return 0; // If user presses Cancel
-
-			try {
-				int bet = Integer.parseInt(input);
-				if (bet == 0 || (bet > 0 && bet <= bank)) {
-					return bet;
-				} else {
-					showMessage("Invalid bet. Enter a value between 1 and " + bank + ", or 0 to quit.");
-				}
-			} catch (NumberFormatException e) {
-				showMessage("Please enter a valid number.");
-			}
-		}
-	}
-
-	// Determine winnings based on the dice rolled and bet
-	public static int calculateWinnings(int d1, int d2, int bet) {
-		if (d1 == 6 && d2 == 6) {
-			return bet * 5; // Jackpot
-		} else if (d1 == d2) {
-			return bet * 2; // Pair
-		} else if (d1 + d2 == 7) {
-			return bet * 3; // Lucky Seven
-		} else if ((d1 + d2) % 2 == 0) {
-			return bet; // Even total
+	// Calculate winnings based on rules
+	public static int calculateWinnings(int d1, int d2) {
+		if (d1 == d2) {
+			return 3; // Doubles
+		} else if (Math.abs(d1 - d2) == 1 && !(d1 == 6 && d2 == 1) && !(d1 == 1 && d2 == 6)) {
+			return 2; // Sequential
 		} else {
-			return -bet; // Odd total - lose
+			return 0; // No win
 		}
 	}
 
-	// Create a descriptive message based on the result
+	// Descriptive outcome message
 	public static String getOutcomeMessage(int d1, int d2, int winnings) {
-		String outcome;
-		if (d1 == 6 && d2 == 6) {
-			outcome = "JACKPOT! Double sixes!";
-		} else if (d1 == d2) {
-			outcome = "You rolled a pair!";
-		} else if (d1 + d2 == 7) {
-			outcome = "Lucky Seven!";
-		} else if ((d1 + d2) % 2 == 0) {
-			outcome = "Even total!";
+		if (d1 == d2) {
+			return "🎉 You rolled doubles! You win £3!";
+		} else if (Math.abs(d1 - d2) == 1 && !(d1 == 6 && d2 == 1) && !(d1 == 1 && d2 == 6)) {
+			return "✨ Sequential numbers! You win £2!";
 		} else {
-			outcome = "Odd total. You lose!";
+			return "❌ No match. You win nothing.";
 		}
-
-		String result = outcome + "\n";
-		result += (winnings >= 0) ? "You won $" + winnings : "You lost $" + Math.abs(winnings);
-		return result;
 	}
 
-	// Show a message using a dialog box
+	// Show any message in a dialog box
 	public static void showMessage(String message) {
 		JOptionPane.showMessageDialog(null, message);
 	}
