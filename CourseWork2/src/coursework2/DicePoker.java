@@ -1,96 +1,159 @@
 package coursework2;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
 import javax.swing.JOptionPane;
 
 public class DicePoker {
+	static int bank = 6; // Starting balance
+	static int attemptsLeft = 5; // Maximum 5 bets
+	static final int MAX_ATTEMPTS = 5; // For resets
+	static Random rand = new Random(); // Random generator
+	static String[] results = new String[5]; // Store up to 5 results
+	static int roundCounter = 0; // How many rounds played
 
-	static int bank = 6; // Start with £6
-	static int attemptsLeft = 5; // Max 5 attempts
-	static Random rand = new Random(); // Random number generator
-
-	// Array to keep track of results for 5 bets max
-	static String[] results = new String[5];
-	static int roundCounter = 0; // Tracks how many rounds played
+	static Map<String, Integer> highScores = new HashMap<>(); // name → score
 
 	public static void main(String[] args) {
-		showMessage("🎲 Welcome to Dice Poker 🎲\nYou start with £6.\nEach bet costs £1.\nYou have 5 total attempts.");
+		do {
+			runGame(); // Run one player game session
+		} while (askToAddAnotherPlayer());
+
+		showMessage("👋 Thank you for playing Dice Poker!");
+	}
+
+	// Full game session for one player
+	public static void runGame() {
+		// Reset game state
+		bank = 6;
+		attemptsLeft = MAX_ATTEMPTS;
+		results = new String[MAX_ATTEMPTS];
+		roundCounter = 0;
+
+		String playerName = getPlayerName();
+		showMessage("🎲 Welcome, " + playerName
+				+ "! 🎲\nYou start with £6.\nUp to 5 bets allowed.\nBet between £1 and £4.");
 
 		while (bank > 0 && attemptsLeft > 0) {
 			showMessage("💰 Balance: £" + bank + "\nAttempts left: " + attemptsLeft);
+			int bet = getValidBet();
 
-			int confirm = JOptionPane.showConfirmDialog(null, "Would you like to place a £1 bet?", "Place Bet",
-					JOptionPane.YES_NO_OPTION);
+			if (bet == 0)
+				break; // user canceled
 
-			if (confirm != JOptionPane.YES_OPTION) {
-				break;
-			}
-
-			bank -= 1; // Deduct £1 to place bet
-			attemptsLeft--; // Use up one attempt
-			roundCounter++; // Count this round
+			bank -= bet;
+			attemptsLeft--;
+			roundCounter++;
 
 			int die1 = rollDie();
 			int die2 = rollDie();
 
-			int winnings = calculateWinnings(die1, die2); // Either 3, 2, or 0
-			int netChange = winnings - 1; // Gain/loss after £1 bet
+			int winnings = calculateWinnings(die1, die2, bet);
+			int netChange = winnings - bet;
 			bank += winnings;
 
-			// Format: Round X - Rolled X and Y – Earned/Lost £Z
-			results[roundCounter - 1] = String.format("Round %d - Rolled %d and %d – %s £%d", roundCounter, die1, die2,
-					(netChange >= 0) ? "Earned" : "Lost", Math.abs(netChange));
+			results[roundCounter - 1] = String.format("Round %d - Bet £%d - Rolled %d and %d – %s £%d", roundCounter,
+					bet, die1, die2, (netChange >= 0 ? "Earned" : "Lost"), Math.abs(netChange));
 
-			// Optional per-round feedback
 			String message = String.format("🎲 You rolled: %d and %d\n%s\n💰 New Balance: £%d\n🕐 Attempts Left: %d",
-					die1, die2, getOutcomeMessage(die1, die2, winnings), bank, attemptsLeft);
-
+					die1, die2, getOutcomeMessage(die1, die2, winnings, bet), bank, attemptsLeft);
 			showMessage(message);
 		}
 
-		// Compile all results
+		// Game summary
 		StringBuilder summary = new StringBuilder("📊 Game Summary:\n\n");
-
 		for (int i = 0; i < roundCounter; i++) {
 			summary.append(results[i]).append("\n");
 		}
-
 		summary.append("\n🏁 Final Balance: £").append(bank);
-
 		showMessage(summary.toString());
+
+		// Update high score
+		highScores.put(playerName, bank);
+
+		// Show score table
+		displayHighScores();
 	}
 
-	// Simulates rolling one 6-sided die
+	// Ask if user wants to add another player
+	public static boolean askToAddAnotherPlayer() {
+		int choice = JOptionPane.showConfirmDialog(null, "Would you like to add another player?", "Add Player",
+				JOptionPane.YES_NO_OPTION);
+		return choice == JOptionPane.YES_OPTION;
+	}
+
+	// Get player name
+	public static String getPlayerName() {
+		String name = "";
+		while (name == null || name.trim().isEmpty()) {
+			name = JOptionPane.showInputDialog("Enter your name:");
+		}
+		return name.trim();
+	}
+
+	// Prompt user for a valid bet
+	public static int getValidBet() {
+		while (true) {
+			String input = JOptionPane.showInputDialog("Enter your bet (£1–£4):");
+			if (input == null)
+				return 0;
+			try {
+				int bet = Integer.parseInt(input);
+				if (bet >= 1 && bet <= 4 && bet <= bank) {
+					return bet;
+				} else if (bet > bank) {
+					showMessage("You cannot bet more than your current balance (£" + bank + ").");
+				} else {
+					showMessage("Bet must be between £1 and £4.");
+				}
+			} catch (NumberFormatException e) {
+				showMessage("Please enter a valid whole number.");
+			}
+		}
+	}
+
+	// Simulate rolling a die (1–6)
 	public static int rollDie() {
 		return rand.nextInt(6) + 1;
 	}
 
-	// Calculate winnings based on rules
-	public static int calculateWinnings(int d1, int d2) {
+	// Winnings logic
+	public static int calculateWinnings(int d1, int d2, int bet) {
 		if (d1 == d2) {
-			return 3; // Doubles
+			return bet * 3; // Doubles
 		} else if (Math.abs(d1 - d2) == 1 && !(d1 == 6 && d2 == 1) && !(d1 == 1 && d2 == 6)) {
-			return 2; // Sequential
+			return bet * 2; // Sequential (no wrap)
 		} else {
-			return 0; // No win
+			return 0; // Loss
 		}
 	}
 
-	// Descriptive outcome message
-	public static String getOutcomeMessage(int d1, int d2, int winnings) {
+	// Outcome message generator
+	public static String getOutcomeMessage(int d1, int d2, int winnings, int bet) {
 		if (d1 == d2) {
-			return "🎉 You rolled doubles! You win £3!";
+			return "🎉 Doubles! You win £" + winnings + "!";
 		} else if (Math.abs(d1 - d2) == 1 && !(d1 == 6 && d2 == 1) && !(d1 == 1 && d2 == 6)) {
-			return "✨ Sequential numbers! You win £2!";
+			return "✨ Sequential numbers! You win £" + winnings + "!";
 		} else {
 			return "❌ No match. You win nothing.";
 		}
 	}
 
-	// Show any message in a dialog box
+	// Show message dialog
 	public static void showMessage(String message) {
 		JOptionPane.showMessageDialog(null, message);
+	}
+
+	// Show high scores sorted
+	public static void displayHighScores() {
+		StringBuilder table = new StringBuilder("🏆 High Score Table 🏆\n\n");
+
+		highScores.entrySet().stream().sorted((a, b) -> b.getValue() - a.getValue()).limit(5)
+				.forEach(entry -> table.append(entry.getKey()).append(" – £").append(entry.getValue()).append("\n"));
+
+		showMessage(table.toString());
 	}
 
 }
