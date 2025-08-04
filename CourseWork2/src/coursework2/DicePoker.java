@@ -1,47 +1,49 @@
 package coursework2;
 
+import java.awt.Point;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
+import javax.swing.JDialog;
 import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 
 public class DicePoker {
-	static int bank = 6; // Starting balance
-	static int attemptsLeft = 5; // Maximum 5 bets
-	static final int MAX_ATTEMPTS = 5; // For resets
-	static Random rand = new Random(); // Random generator
-	static String[] results = new String[5]; // Store up to 5 results
-	static int roundCounter = 0; // How many rounds played
+	static int bank = 6;
+	static int attemptsLeft = 5;
+	static final int MAX_ATTEMPTS = 5;
+	static Random rand = new Random();
+	static String[] results = new String[5];
+	static int roundCounter = 0;
 
-	static Map<String, Integer> highScores = new HashMap<>(); // name → score
+	static Map<String, Integer> highScores = new HashMap<>();
 
 	public static void main(String[] args) {
 		do {
-			runGame(); // Run one player game session
+			runGame();
 		} while (askToAddAnotherPlayer());
 
-		showMessage("👋 Thank you for playing Dice Poker!");
+		showMessage("🏿Thank you for playing Dice Poker!");
 	}
 
-	// Full game session for one player
 	public static void runGame() {
-		// Reset game state
 		bank = 6;
 		attemptsLeft = MAX_ATTEMPTS;
 		results = new String[MAX_ATTEMPTS];
 		roundCounter = 0;
 
+		showMessage(" Welcome to Dice Poker! \nYou start with £6.\nUp to 5 bets allowed.\nBet between £1 and £4.");
 		String playerName = getPlayerName();
-		showMessage("🎲 Welcome, " + playerName
-				+ "! 🎲\nYou start with £6.\nUp to 5 bets allowed.\nBet between £1 and £4.");
+		showMessage(" Hello, " + playerName + "! Let's begin your game 😀");
 
 		while (bank > 0 && attemptsLeft > 0) {
-			showMessage("💰 Balance: £" + bank + "\nAttempts left: " + attemptsLeft);
-			int bet = getValidBet();
+			showMessage("🤑 Balance: £" + bank + "\nAttempts left: " + attemptsLeft);
 
+			int bet = getValidBet();
 			if (bet == 0)
-				break; // user canceled
+				break;
 
 			bank -= bet;
 			attemptsLeft--;
@@ -62,29 +64,23 @@ public class DicePoker {
 			showMessage(message);
 		}
 
-		// Game summary
 		StringBuilder summary = new StringBuilder("📊 Game Summary:\n\n");
 		for (int i = 0; i < roundCounter; i++) {
 			summary.append(results[i]).append("\n");
 		}
 		summary.append("\n🏁 Final Balance: £").append(bank);
-		showMessage(summary.toString());
+		showScrollableMessage(summary.toString(), "Game Summary");
 
-		// Update high score
-		highScores.put(playerName, bank);
-
-		// Show score table
+		addToHighScores(playerName, bank);
 		displayHighScores();
 	}
 
-	// Ask if user wants to add another player
 	public static boolean askToAddAnotherPlayer() {
 		int choice = JOptionPane.showConfirmDialog(null, "Would you like to add another player?", "Add Player",
 				JOptionPane.YES_NO_OPTION);
 		return choice == JOptionPane.YES_OPTION;
 	}
 
-	// Get player name
 	public static String getPlayerName() {
 		String name = "";
 		while (name == null || name.trim().isEmpty()) {
@@ -93,15 +89,19 @@ public class DicePoker {
 		return name.trim();
 	}
 
-	// Prompt user for a valid bet
 	public static int getValidBet() {
 		while (true) {
-			String input = JOptionPane.showInputDialog("Enter your bet (£1–£4):");
+			String input = JOptionPane.showInputDialog(null, "Enter your bet (£1–£4):", "Place Your Bet",
+					JOptionPane.QUESTION_MESSAGE);
+
 			if (input == null)
-				return 0;
+				return 0; // Cancel pressed
+
 			try {
-				int bet = Integer.parseInt(input);
+				int bet = Integer.parseInt(input.trim());
 				if (bet >= 1 && bet <= 4 && bet <= bank) {
+					// Shake after successful input
+					triggerPostInputShake("Bet accepted: £" + bet);
 					return bet;
 				} else if (bet > bank) {
 					showMessage("You cannot bet more than your current balance (£" + bank + ").");
@@ -114,39 +114,75 @@ public class DicePoker {
 		}
 	}
 
-	// Simulate rolling a die (1–6)
+	public static void triggerPostInputShake(String message) {
+		JOptionPane pane = new JOptionPane(message, JOptionPane.INFORMATION_MESSAGE);
+		JDialog dialog = pane.createDialog(null, "Processing...");
+
+		// Shake after dialog is shown
+		dialog.setVisible(true);
+
+		// Then shake it
+		try {
+			for (int i = 0; i < 10; i++) {
+				Point loc = dialog.getLocation();
+				int offset = (i % 2 == 0) ? 10 : -10;
+				dialog.setLocation(loc.x + offset, loc.y);
+				Thread.sleep(40);
+			}
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+		}
+		dialog.dispose(); // Close after shaking
+	}
+
 	public static int rollDie() {
 		return rand.nextInt(6) + 1;
 	}
 
-	// Winnings logic
 	public static int calculateWinnings(int d1, int d2, int bet) {
 		if (d1 == d2) {
-			return bet * 3; // Doubles
-		} else if (Math.abs(d1 - d2) == 1 && !(d1 == 6 && d2 == 1) && !(d1 == 1 && d2 == 6)) {
-			return bet * 2; // Sequential (no wrap)
+			return bet * 3;
+		} else if (isSequential(d1, d2)) {
+			return bet * 2;
 		} else {
-			return 0; // Loss
+			return 0;
 		}
 	}
 
-	// Outcome message generator
+	public static boolean isSequential(int a, int b) {
+		return Math.abs(a - b) == 1 && !(a == 6 && b == 1) && !(a == 1 && b == 6);
+	}
+
 	public static String getOutcomeMessage(int d1, int d2, int winnings, int bet) {
 		if (d1 == d2) {
 			return "🎉 Doubles! You win £" + winnings + "!";
-		} else if (Math.abs(d1 - d2) == 1 && !(d1 == 6 && d2 == 1) && !(d1 == 1 && d2 == 6)) {
+		} else if (isSequential(d1, d2)) {
 			return "✨ Sequential numbers! You win £" + winnings + "!";
 		} else {
 			return "❌ No match. You win nothing.";
 		}
 	}
 
-	// Show message dialog
 	public static void showMessage(String message) {
 		JOptionPane.showMessageDialog(null, message);
 	}
 
-	// Show high scores sorted
+	public static void showScrollableMessage(String message, String title) {
+		JTextArea textArea = new JTextArea(message);
+		textArea.setEditable(false);
+		JScrollPane scrollPane = new JScrollPane(textArea);
+		JOptionPane.showMessageDialog(null, scrollPane, title, JOptionPane.INFORMATION_MESSAGE);
+	}
+
+	public static void addToHighScores(String name, int score) {
+		String key = name;
+		int suffix = 1;
+		while (highScores.containsKey(key)) {
+			key = name + " (" + suffix++ + ")";
+		}
+		highScores.put(key, score);
+	}
+
 	public static void displayHighScores() {
 		StringBuilder table = new StringBuilder("🏆 High Score Table 🏆\n\n");
 
@@ -155,5 +191,4 @@ public class DicePoker {
 
 		showMessage(table.toString());
 	}
-
 }
