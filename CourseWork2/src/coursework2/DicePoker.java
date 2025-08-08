@@ -69,7 +69,7 @@ public class DicePoker {
 
 			// Build the message showing roll results, outcome, updated bank and remaining
 			// attempts
-			String message = String.format(" You rolled: %d and %d\n%s\n💰 New Balance: £%d\n Attempts Left: %d", dice1,
+			String message = String.format(" You rolled: %d and %d\n%s\n New Balance: £%d\n Attempts Left: %d", dice1,
 					dice2, getOutcomeMessage(dice1, dice2, winnings, bet), bank, attemptsLeft);
 			showMessage(message); // Display the round result to the player
 		}

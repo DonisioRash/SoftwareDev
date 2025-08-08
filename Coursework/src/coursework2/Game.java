@@ -32,7 +32,7 @@ public class Game {
 			results[round - 1] = String.format("Round %d - Bet £%d - Rolled %d & %d - %s £%d", round, bet,
 					d1.getValue(), d2.getValue(), (winnings >= bet ? "Earned" : "Lost"), Math.abs(winnings - bet));
 
-			UI.showMessage(String.format(" You rolled %d and %d\n%s\nNew Balance: £%d", d1.getValue(), d2.getValue(),
+			UI.showMessage(String.format(" You rolled %d and %d\n%s\n New Balance: £%d", d1.getValue(), d2.getValue(),
 					Rules.getOutcomeMessage(d1.getValue(), d2.getValue(), winnings, bet), bank));
 		}
 
