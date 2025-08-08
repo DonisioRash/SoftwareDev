@@ -12,7 +12,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
-public class DicePoker {
+public class DicePokeroriginal {
 	static int bank = 6; // Starting money for the player at the beginning of the game
 	static int attemptsLeft = 5; // Maximum number of rounds (bets) allowed per game
 	static final int MAX_ATTEMPTS = 5; // Constant used to reset attempts for each new game
