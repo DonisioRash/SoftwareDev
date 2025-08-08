@@ -16,7 +16,7 @@ public class HighScoreManager {
 	}
 
 	public static void display() {
-		StringBuilder sb = new StringBuilder("🏆 High Scores\n\n");
+		StringBuilder sb = new StringBuilder(" High Scores\n\n");
 		scores.entrySet().stream().sorted((a, b) -> b.getValue() - a.getValue()).limit(5)
 				.forEach(e -> sb.append(e.getKey()).append(" – £").append(e.getValue()).append("\n"));
 		UI.showMessage(sb.toString());

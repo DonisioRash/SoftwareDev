@@ -5,7 +5,7 @@ public class DicePoker {
 		do {
 			new Game().play();
 		} while (askToAddAnotherPlayer());
-		UI.showMessage("🎮 Thank you for playing Dice Poker!");
+		UI.showMessage(" Thank you for playing Dice Poker!");
 	}
 
 	public static boolean askToAddAnotherPlayer() {

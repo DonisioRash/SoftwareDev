@@ -14,7 +14,7 @@ public class Game {
 		UI.showMessage(" Hello, " + player + "! Let's begin your game"); // Personalized greeting
 
 		while (bank > 0 && attempts > 0) {
-			UI.showMessage("💰 Balance: £" + bank + ", Attempts left: " + attempts);
+			UI.showMessage(" Balance: £" + bank + ", Attempts left: " + attempts);
 			int bet = UI.getValidBet(bank);
 			if (bet == 0)
 				break;
@@ -32,11 +32,11 @@ public class Game {
 			results[round - 1] = String.format("Round %d - Bet £%d - Rolled %d & %d - %s £%d", round, bet,
 					d1.getValue(), d2.getValue(), (winnings >= bet ? "Earned" : "Lost"), Math.abs(winnings - bet));
 
-			UI.showMessage(String.format("🎲 You rolled %d and %d%s💰 New Balance: £%d", d1.getValue(), d2.getValue(),
+			UI.showMessage(String.format(" You rolled %d and %d%s New Balance: £%d", d1.getValue(), d2.getValue(),
 					Rules.getOutcomeMessage(d1.getValue(), d2.getValue(), winnings, bet), bank));
 		}
 
-		UI.showScrollableMessage(buildSummary(), "📊 Game Summary");
+		UI.showScrollableMessage(buildSummary(), " Game Summary");
 		HighScoreManager.add(player.getName(), bank);
 		HighScoreManager.display();
 	}
@@ -47,7 +47,7 @@ public class Game {
 			if (result != null)
 				sb.append(result).append("\n");
 		}
-		sb.append("\n🏁 Final Balance: £").append(bank);
+		sb.append("\n Final Balance: £").append(bank);
 		return sb.toString();
 	}
 }
