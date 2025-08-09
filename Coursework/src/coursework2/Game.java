@@ -9,12 +9,12 @@ public class Game {
 	private int round = 0;
 
 	public void play() {
-		UI.showMessage("Welcome to Dice Poker! \nYou start with £6.\nUp to 5 bets allowed.\nBet between £1 and £4.");
+		UI.showMessage("Welcome to Dice Poker!\nYou start with £6.\nUp to 5 bets allowed.\nBet between £1 and £4.");
 		player = new Player(UI.getPlayerName());
-		UI.showMessage(" Hello, " + player.getName() + "! Let's begin your game"); // Personalized greeting
+		UI.showMessage("Hello, " + player.getName() + "! Let's begin your game"); // Personalized greeting
 
 		while (bank > 0 && attempts > 0) {
-			UI.showMessage(" Balance: £" + bank + ", Attempts left: " + attempts);
+			UI.showMessage("Balance: £" + bank + "\nAttempts left: " + attempts);
 			int bet = UI.getValidBet(bank);
 			if (bet == 0)
 				break;
@@ -32,11 +32,11 @@ public class Game {
 			results[round - 1] = String.format("Round %d - Bet £%d - Rolled %d & %d - %s £%d", round, bet,
 					d1.getValue(), d2.getValue(), (winnings >= bet ? "Earned" : "Lost"), Math.abs(winnings - bet));
 
-			UI.showMessage(String.format(" You rolled %d and %d\n%s\n New Balance: £%d", d1.getValue(), d2.getValue(),
+			UI.showMessage(String.format("You rolled %d and %d\n%s\n New Balance: £%d", d1.getValue(), d2.getValue(),
 					Rules.getOutcomeMessage(d1.getValue(), d2.getValue(), winnings, bet), bank));
 		}
 
-		UI.showScrollableMessage(buildSummary(), " Game Summary");
+		UI.showScrollableMessage(buildSummary(), "Game Summary");
 		HighScoreManager.add(player.getName(), bank);
 		HighScoreManager.display();
 	}
