@@ -11,7 +11,7 @@ public class Game {
 	public void play() {
 		UI.showMessage("Welcome to Dice Poker! \nYou start with £6.\nUp to 5 bets allowed.\nBet between £1 and £4.");
 		player = new Player(UI.getPlayerName());
-		UI.showMessage(" Hello, " + player + "! Let's begin your game"); // Personalized greeting
+		UI.showMessage(" Hello, " + player.getName() + "! Let's begin your game"); // Personalized greeting
 
 		while (bank > 0 && attempts > 0) {
 			UI.showMessage(" Balance: £" + bank + ", Attempts left: " + attempts);
