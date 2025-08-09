@@ -1,3 +1,4 @@
+// Donisio Rash
 package coursework2;
 
 public class DicePoker { // Main entry point for the Dice Poker game
@@ -15,7 +16,7 @@ public class DicePoker { // Main entry point for the Dice Poker game
 		UI.showMessage(" Thank you for playing Dice Poker!");
 	}
 
-	// ==== Method to ask if a new player should be added ====
+	// Method to ask if a new player should be added
 	public static boolean askToAddAnotherPlayer() {
 		// Show a Yes/No confirmation dialog to the user
 		int choice = javax.swing.JOptionPane.showConfirmDialog(null, "Add another player?", "Add Player",
