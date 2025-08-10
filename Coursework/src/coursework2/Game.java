@@ -13,7 +13,8 @@ public class Game { // Class that controls the main game logic
 	// Main game loop method
 	public void play() {
 		// Show initial welcome and game rules
-		UI.showMessage("Welcome to Dice Poker!\nYou start with £6.\nUp to 5 bets allowed.\nBet between £1 and £4.");
+		UI.showMessage(
+				"Welcome to Donisio Rash Dice Poker!\nYou start with £6.\nUp to 5 bets allowed.\nBet between £1 and £4.");
 
 		// Ask the player for their name and create a Player object
 		player = new Player(UI.getPlayerName());
